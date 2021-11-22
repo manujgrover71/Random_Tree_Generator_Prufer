@@ -58,9 +58,22 @@ namespace tree_generator {
             
             fin.close();
             
-            assert(input.size() == 2);
+            assert(input.size() >= 1 && input.size() <= 2);
             
             int N = stoi(input[0]);
+            
+            if(N <= 2) {
+                n = N;
+                prufer.clear();
+                edges.clear();
+                
+                if(N == 2) {
+                    edges.push_back({1, 2});
+                }
+                
+                return;
+            } 
+            
             stringstream ss(input[1]);
             vector<int> temp_prufer;
             
@@ -68,17 +81,17 @@ namespace tree_generator {
                 temp_prufer.push_back(stoi(temp));
             }
             
-            assert(N == temp_prufer.size());
+            assert(N == temp_prufer.size() + 2);
             
             for(auto &el : prufer) {
-                assert(1 <= el && el <= N + 2);
+                assert(1 <= el && el <= N);
             }
             
             prufer.clear();
             edges.clear();
             
             prufer = temp_prufer;
-            n = N + 2;
+            n = N;
             generate_random_tree();
         }
         
@@ -92,7 +105,15 @@ namespace tree_generator {
                 return;
             }
             
-            fout << prufer.size() << '\n';
+            if(n == 1) {
+                fout << "1\n";
+                return;
+            } else if(n == 2) {
+                fout << "2\n";
+                return;
+            }
+            
+            fout << prufer.size() + 2 << '\n';
             
             for(int i = 0; i < prufer.size(); i++) {
                 fout << prufer[i];
