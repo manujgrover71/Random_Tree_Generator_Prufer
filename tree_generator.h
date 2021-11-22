@@ -6,6 +6,7 @@
 #include <time.h>
 #include <assert.h>
 #include <queue>
+#include <fstream>
 
 using namespace std;
 
@@ -32,6 +33,76 @@ namespace tree_generator {
                 generate_prufer_sequence(n);
                 generate_random_tree();
             }
+        }
+        
+        Tree(const string file_name) {
+            deserialize(file_name);
+        }
+        
+        void deserialize(const string file_name) {
+            
+            ifstream fin;
+            fin.open(file_name);
+            
+            if(!fin) {
+                cout << "Unable to open file!\n";
+                return;
+            }
+            
+            vector<string> input;
+            string temp;
+            
+            while(getline(fin, temp)) {
+                input.push_back(temp);
+            }
+            
+            fin.close();
+            
+            assert(input.size() == 2);
+            
+            int N = stoi(input[0]);
+            stringstream ss(input[1]);
+            vector<int> temp_prufer;
+            
+            while(getline(ss, temp, ',')) {
+                temp_prufer.push_back(stoi(temp));
+            }
+            
+            assert(N == temp_prufer.size());
+            
+            for(auto &el : prufer) {
+                assert(1 <= el && el <= N + 2);
+            }
+            
+            prufer.clear();
+            edges.clear();
+            
+            prufer = temp_prufer;
+            n = N + 2;
+            generate_random_tree();
+        }
+        
+        void serialize(const string file_name) {
+            
+            ofstream fout;
+            fout.open(file_name);
+            
+            if(!fout) {
+                cout << "Unable to create / write to file\n";
+                return;
+            }
+            
+            fout << prufer.size() << '\n';
+            
+            for(int i = 0; i < prufer.size(); i++) {
+                fout << prufer[i];
+                
+                if(i != (int)prufer.size() - 1) {
+                    fout << ',';
+                }
+            }
+            
+            fout.close();
         }
         
         void generate_prufer_sequence(int n) {
